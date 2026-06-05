@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進路現実化マップ｜松井山手校</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+:root{--navy:#1a1a4e;--gold:#c8a84b;--bg:#f2f2ee;--white:#fff;--gray:#888;--border:#e0e0da;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#222;}
+header{background:var(--navy);color:#fff;padding:16px 18px 12px;}
+.header-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+header h1{font-size:16px;font-weight:900;}
+.school-badge{font-size:10px;background:var(--gold);color:var(--navy);padding:2px 7px;border-radius:10px;font-weight:700;}
+header p{font-size:10px;color:#99a;margin-top:3px;}
+.stats-bar{display:flex;gap:12px;margin-top:8px;}
+.stat{font-size:10px;color:#aab;}.stat b{color:#fff;font-size:12px;}
+.tabs{display:flex;background:var(--navy);padding:0 10px;gap:1px;overflow-x:auto;border-top:1px solid #2a2a6e;}
+.tab{padding:9px 10px;font-size:11px;font-weight:700;color:#668;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;}
+.tab.active{color:#fff;border-bottom-color:var(--gold);}
+.tab-cnt{opacity:.6;font-size:10px;margin-left:2px;}
+.filter-bar{display:flex;gap:6px;padding:10px 12px 0;max-width:680px;margin:0 auto;flex-wrap:wrap;}
+.filter-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:14px;border:1.5px solid var(--border);background:var(--white);color:#666;cursor:pointer;}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.content{padding:10px 12px 24px;max-width:680px;margin:0 auto;}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.li{display:flex;align-items:center;gap:3px;font-size:10px;color:#666;}
+.dot{width:8px;height:8px;border-radius:50%;}
+.dA{background:#00a86b;}.dB{background:#f0a500;}.dC{background:#e05000;}.dD{background:#c00020;}
+.sok{background:#e8f8f0;color:#00a86b;font-size:9px;font-weight:700;padding:1px 4px;border-radius:2px;}
+.sng{background:#f0f0f0;color:#aaa;font-size:9px;font-weight:700;padding:1px 4px;border-radius:2px;}
+.card{background:var(--white);border-radius:8px;margin-bottom:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.rA::before{background:#00a86b;}.rB::before{background:#f0a500;}.rC::before{background:#e05000;}.rD::before{background:#c00020;}.rU::before{background:#ddd;}
+.badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0;}
+.rA .badge{background:#e8f8f0;color:#00a86b;}.rB .badge{background:#fff8e8;color:#f0a500;}
+.rC .badge{background:#fff0e8;color:#e05000;}.rD .badge{background:#ffeaee;color:#c00020;}.rU .badge{background:#f0f0f0;color:#bbb;}
+.card-body{flex:1;min-width:0;}
+.card-name{font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.cat-tag{font-size:9px;color:#999;background:#f0f0f0;padding:1px 5px;border-radius:3px;font-weight:700;}
+.card-sub{font-size:10px;color:var(--gray);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-note{font-size:10px;color:#d04000;margin-top:2px;}
+.time-block{text-align:right;flex-shrink:0;min-width:60px;}
+.time-num{font-size:20px;font-weight:900;color:var(--navy);line-height:1;}
+.time-num.unk{font-size:11px;color:#bbb;font-weight:700;}
+.time-unit{font-size:10px;color:var(--gray);}
+.time-detail{font-size:9px;color:#bbb;margin-top:2px;line-height:1.5;}
+.count-line{font-size:11px;color:#999;margin-bottom:8px;}
+.empty{text-align:center;color:#aaa;font-size:13px;padding:32px 0;}
+.rank-def{font-size:10px;color:#aaa;padding:4px 0 8px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <h1>📍 進路現実化マップ</h1>
+    <span class="school-badge">松井山手校</span>
+  </div>
+  <p>松井山手駅出発〜大学入口までの総所要時間</p>
+  <div class="stats-bar">
+    <div class="stat">対象 <b>39</b> キャンパス</div>
+    <div class="stat">確認済 <b>13</b> 校</div>
+    <div class="stat">調査中 <b>26</b> 校</div>
+  </div>
+</header>
+<div class="tabs" id="tabs"></div>
+<div class="filter-bar" id="filters"></div>
+<div class="content">
+  <div class="legend">
+    <div class="li"><div class="dot dA"></div>A：〜60分</div>
+    <div class="li"><div class="dot dB"></div>B：61〜90分</div>
+    <div class="li"><div class="dot dC"></div>C：91〜119分</div>
+    <div class="li"><div class="dot dD"></div>D：120分以上</div>
+    <div class="li"><span class="sok">確認済</span>実測値</div>
+    <div class="li"><span class="sng">未確認</span>調査中</div>
+  </div>
+  <div id="count-line" class="count-line"></div>
+  <div id="cards"></div>
+</div>
+<script>
+const DATA=[{"id": "OIT_HRK", "daigaku": "大阪工業大学", "campus": "枚方", "fields": ["INFO"], "gakubu": "情報科学部", "ekimade": "", "ekikara_text": "長尾駅→バス約15分", "ekikara_n": 15, "total": "", "transfer": "1", "rank": "", "status": "要確認", "bikou": "松井山手から近接。要バス", "category": "その他"}, {"id": "DOSH_KTN", "daigaku": "同志社大学", "campus": "京田辺", "fields": ["SCI", "MED", "EDU", "INFO", "INTL", "AGRI", "HUM"], "gakubu": "文化情報学部,理工学部,生命医科学部,スポーツ健康科学部,心理学部,グローバル・コミュニケーション学部", "ekimade": "11", "ekikara_text": "徒歩10分", "ekikara_n": 10, "total": 21, "transfer": "0", "rank": "A", "status": "確認済", "bikou": "近鉄興戸駅も利用可（徒歩12〜15分）", "category": "関関同立"}, {"id": "SET_HRK", "daigaku": "摂南大学", "campus": "枚方", "fields": ["MED", "AGRI"], "gakubu": "薬学部,看護学部,農学部", "ekimade": 0, "ekikara_text": "バス直通（摂南大学北口）", "ekikara_n": 0, "total": 11, "transfer": 0, "rank": "A", "status": "確認済", "bikou": "松井山手駅→摂南大学北口 京阪バス直通11分", "category": "その他"}, {"id": "DOSH_IMG", "daigaku": "同志社大学", "campus": "今出川", "fields": ["BUS", "LAW", "HUM", "INTL"], "gakubu": "神学部,文学部,社会学部,法学部,経済学部,商学部,政策学部,グローバル地域文化学部", "ekimade": "53", "ekikara_text": "徒歩1分", "ekikara_n": 1, "total": 54, "transfer": "2", "rank": "A", "status": "確認済", "bikou": "", "category": "関関同立"}, {"id": "KU_YOS", "daigaku": "京都大学", "campus": "吉田", "fields": ["SCI", "BUS", "LAW", "MED", "EDU", "ARCH", "AGRI", "HUM"], "gakubu": "総合人間学部,文学部,教育学部,法学部,経済学部,理学部,医学部,薬学部,工学部,農学部", "ekimade": "46", "ekikara_text": "徒歩10〜15分", "ekikara_n": 10, "total": 56, "transfer": "2", "rank": "A", "status": "確認済", "bikou": "JR京都駅からバス約45分", "category": "国公立"}, {"id": "RYU_FUK", "daigaku": "龍谷大学", "campus": "深草", "fields": ["BUS", "LAW", "EDU", "INTL", "HUM"], "gakubu": "文学部（1・2年次）,心理学部（1・2年次）,経済学部,経営学部,法学部,政策学部,国際学部,社会学部", "ekimade": "56", "ekikara_text": "徒歩3分", "ekikara_n": 3, "total": 59, "transfer": "2", "rank": "A", "status": "確認済", "bikou": "文・心理3・4年次は瀬田へ移動", "category": "産近甲龍"}, {"id": "KAN_SEN", "daigaku": "関西大学", "campus": "千里山", "fields": ["SCI", "BUS", "LAW", "ARCH", "INTL", "HUM"], "gakubu": "法学部,文学部,経済学部,商学部,社会学部,政策創造学部,外国語学部,システム理工学部,環境都市工学部,化学生命工学部", "ekimade": "57", "ekikara_text": "徒歩5分", "ekikara_n": 5, "total": 62, "transfer": "2", "rank": "B", "status": "確認済", "bikou": "", "category": "関関同立"}, {"id": "KIND_HIG", "daigaku": "近畿大学", "campus": "東大阪", "fields": ["SCI", "BUS", "LAW", "MED", "INFO", "ARCH", "INTL", "HUM"], "gakubu": "法学部,経済学部,経営学部,理工学部,建築学部,薬学部,文芸学部,総合社会学部,国際学部,情報学部,看護学部（2026年4月開設）", "ekimade": "52", "ekikara_text": "徒歩10分", "ekikara_n": 10, "total": 62, "transfer": "2", "rank": "B", "status": "確認済", "bikou": "", "category": "産近甲龍"}, {"id": "OU_TOY", "daigaku": "大阪大学", "campus": "豊中", "fields": ["SCI", "BUS", "LAW", "HUM"], "gakubu": "文学部,法学部,経済学部,理学部,基礎工学部", "ekimade": "49", "ekikara_text": "徒歩15〜25分", "ekikara_n": 15, "total": 64, "transfer": "2", "rank": "B", "status": "確認済", "bikou": "", "category": "国公立"}, {"id": "RITS_OIC", "daigaku": "立命館大学", "campus": "OIC（大阪いばらき）", "fields": ["BUS", "LAW", "EDU", "INFO", "INTL", "HUM"], "gakubu": "経営学部,政策科学部,総合心理学部,グローバル教養学部,映像学部,情報理工学部", "ekimade": "67", "ekikara_text": "徒歩5分", "ekikara_n": 5, "total": 72, "transfer": "2", "rank": "B", "status": "確認済", "bikou": "2026年4月デザイン・アート学部新設予定", "category": "関関同立"}, {"id": "KG_UEG", "daigaku": "関西学院大学", "campus": "西宮上ケ原", "fields": ["BUS", "LAW", "HUM", "INTL"], "gakubu": "神学部,文学部,社会学部,法学部,経済学部,商学部,人間福祉学部,国際学部", "ekimade": "64", "ekikara_text": "徒歩15分（坂あり）", "ekikara_n": 15, "total": 79, "transfer": "3", "rank": "B", "status": "確認済", "bikou": "急坂あり。バス利用で約7分", "category": "関関同立"}, {"id": "RITS_BKC", "daigaku": "立命館大学", "campus": "BKC（びわこ・くさつ）", "fields": ["BUS", "MED", "SCI", "AGRI"], "gakubu": "理工学部,生命科学部,薬学部,経済学部,スポーツ健康科学部,食マネジメント学部", "ekimade": "70", "ekikara_text": "バス10分", "ekikara_n": 10, "total": 80, "transfer": "2", "rank": "B", "status": "確認済", "bikou": "", "category": "関関同立"}, {"id": "RYU_SET", "daigaku": "龍谷大学", "campus": "瀬田", "fields": ["SCI", "AGRI"], "gakubu": "先端理工学部,農学部", "ekimade": "80", "ekikara_text": "バス8分", "ekikara_n": 8, "total": 88, "transfer": "2", "rank": "B", "status": "確認済", "bikou": "2027年4月「理工学部」に名称変更予定", "category": "産近甲龍"}, {"id": "KG_KSD", "daigaku": "関西学院大学", "campus": "神戸三田", "fields": ["SCI", "BUS", "LAW", "ARCH", "AGRI"], "gakubu": "理学部,工学部,生命環境学部,建築学部,総合政策学部", "ekimade": 105, "ekikara_text": "バス15分", "ekikara_n": 15, "total": 120, "transfer": 1, "rank": "D", "status": "確認済", "bikou": "片道120分。毎日通学は現実的でない", "category": "関関同立"}, {"id": "RITS_KIN", "daigaku": "立命館大学", "campus": "衣笠", "fields": ["LAW", "HUM", "INTL"], "gakubu": "法学部,産業社会学部,国際関係学部,文学部,映像学部", "ekimade": "", "ekikara_text": "徒歩6分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "関関同立"}, {"id": "KAN_TKT", "daigaku": "関西大学", "campus": "高槻", "fields": ["INFO"], "gakubu": "総合情報学部", "ekimade": "", "ekikara_text": "バス約20分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "阪急富田駅からも利用可", "category": "関関同立"}, {"id": "KAN_MUS", "daigaku": "関西大学", "campus": "高槻ミューズ", "fields": ["LAW"], "gakubu": "社会安全学部", "ekimade": "", "ekikara_text": "徒歩7分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "阪急高槻市駅から徒歩10分", "category": "関関同立"}, {"id": "KAN_SAK", "daigaku": "関西大学", "campus": "堺", "fields": ["MED", "EDU"], "gakubu": "人間健康学部", "ekimade": "", "ekikara_text": "徒歩1分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "関関同立"}, {"id": "KAN_SUI", "daigaku": "関西大学", "campus": "吹田みらい", "fields": ["INFO"], "gakubu": "ビジネスデータサイエンス学部", "ekimade": "", "ekikara_text": "徒歩18分またはバス", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "2025年開設", "category": "関関同立"}, {"id": "KSU_KAM", "daigaku": "京都産業大学", "campus": "上賀茂", "fields": ["SCI", "BUS", "LAW", "MED", "INFO", "INTL", "AGRI", "HUM"], "gakubu": "経済学部,経営学部,法学部,現代社会学部,国際関係学部,外国語学部,文化学部,理学部,情報理工学部,生命科学部", "ekimade": "", "ekikara_text": "バス", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "全学部同一キャンパス。2026年アントレプレナーシップ学環新設", "category": "産近甲龍"}, {"id": "KIND_NAR", "daigaku": "近畿大学", "campus": "奈良", "fields": ["AGRI"], "gakubu": "農学部", "ekimade": "", "ekikara_text": "バス約10分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "産近甲龍"}, {"id": "OIT_OMY", "daigaku": "大阪工業大学", "campus": "大宮", "fields": ["SCI", "ARCH", "LAW"], "gakubu": "工学部,知的財産学部", "ekimade": "", "ekikara_text": "要確認", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "その他"}, {"id": "OIT_UMD", "daigaku": "大阪工業大学", "campus": "梅田", "fields": ["SCI"], "gakubu": "ロボティクス＆デザイン工学部", "ekimade": "", "ekikara_text": "徒歩5〜8分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "その他"}, {"id": "SET_NEY", "daigaku": "摂南大学", "campus": "寝屋川", "fields": ["SCI", "BUS", "LAW", "INTL", "HUM"], "gakubu": "現代社会学部,法学部,国際学部,経済学部,経営学部,理工学部", "ekimade": "", "ekikara_text": "要確認", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "その他"}, {"id": "KTG_YSN", "daigaku": "京都橘大学", "campus": "山科（大宅）", "fields": ["SCI", "BUS", "MED", "EDU", "INFO", "ARCH", "INTL", "HUM"], "gakubu": "デジタルメディア学部,工学部,文学部,国際学部,発達教育学部,総合心理学部,経済学部,経営学部,看護学部,健康科学部", "ekimade": "", "ekikara_text": "徒歩15〜20分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "無料シャトルバスあり（イオンタウン山科椥辻から）", "category": "その他"}, {"id": "KON_OKM", "daigaku": "甲南大学", "campus": "岡本", "fields": ["SCI", "BUS", "LAW", "INFO", "HUM"], "gakubu": "文学部,理工学部,経済学部,法学部,経営学部,知能情報学部,グローバル教養学環", "ekimade": "", "ekikara_text": "徒歩10分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "産近甲龍"}, {"id": "KON_NIS", "daigaku": "甲南大学", "campus": "西宮", "fields": [], "gakubu": "マネジメント創造学部", "ekimade": "", "ekikara_text": "徒歩3分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "産近甲龍"}, {"id": "KON_POR", "daigaku": "甲南大学", "campus": "ポートアイランド", "fields": [], "gakubu": "フロンティアサイエンス学部", "ekimade": "", "ekikara_text": "徒歩3分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "産近甲龍"}, {"id": "OU_SUI", "daigaku": "大阪大学", "campus": "吹田", "fields": ["SCI", "MED", "EDU", "ARCH", "HUM"], "gakubu": "人間科学部,医学部,歯学部,薬学部,工学部", "ekimade": "", "ekikara_text": "徒歩5〜15分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "国公立"}, {"id": "OU_MIN", "daigaku": "大阪大学", "campus": "箕面", "fields": ["INTL"], "gakubu": "外国語学部", "ekimade": "", "ekikara_text": "徒歩3分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "国公立"}, {"id": "OMU_SUG", "daigaku": "大阪公立大学", "campus": "杉本", "fields": ["SCI", "BUS", "LAW", "HUM"], "gakubu": "商学部,経済学部,法学部,文学部,理学部,生活科学部", "ekimade": "", "ekikara_text": "徒歩1分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "国公立"}, {"id": "OMU_NAK", "daigaku": "大阪公立大学", "campus": "中百舌鳥", "fields": ["SCI", "ARCH", "AGRI"], "gakubu": "現代システム科学域,工学部,農学部,理学部", "ekimade": "", "ekikara_text": "徒歩7分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "なかもず駅（地下鉄）からも徒歩13分", "category": "国公立"}, {"id": "OMU_MOR", "daigaku": "大阪公立大学", "campus": "森之宮", "fields": ["MED"], "gakubu": "リハビリテーション学部", "ekimade": "", "ekikara_text": "徒歩13分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "2025年開設。今後学部拡張予定", "category": "国公立"}, {"id": "KPU_SIM", "daigaku": "京都府立大学", "campus": "下鴨", "fields": ["BUS", "LAW", "AGRI", "HUM"], "gakubu": "文学部,公共政策学部,生命環境学部", "ekimade": "", "ekikara_text": "徒歩10分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "国公立"}, {"id": "KPU_SEI", "daigaku": "京都府立大学", "campus": "精華", "fields": [], "gakubu": "生命環境学部（実習施設）", "ekimade": "", "ekikara_text": "徒歩40分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "実習施設。タクシー利用推奨", "category": "国公立"}, {"id": "KIT_MAT", "daigaku": "京都工芸繊維大学", "campus": "松ヶ崎", "fields": ["SCI", "ARCH"], "gakubu": "工芸科学部", "ekimade": "", "ekikara_text": "徒歩8分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "国公立"}, {"id": "KBU_ROK", "daigaku": "神戸大学", "campus": "六甲台", "fields": ["SCI", "BUS", "LAW", "EDU", "INFO", "ARCH", "INTL", "AGRI", "HUM"], "gakubu": "文学部,発達科学部,法学部,経済学部,経営学部,理学部,工学部,農学部,国際文化学部,システム情報学部", "ekimade": "", "ekikara_text": "徒歩15〜25分（急坂）", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "バス利用で阪急六甲から約6〜7分。坂が急で徒歩はきつい", "category": "国公立"}, {"id": "SU_HIK", "daigaku": "滋賀大学", "campus": "彦根", "fields": ["BUS", "INFO"], "gakubu": "経済学部,データサイエンス学部", "ekimade": "", "ekikara_text": "バス10分または徒歩25分", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "直行バスは平日のみ・100円", "category": "国公立"}, {"id": "SPU_HIK", "daigaku": "滋賀県立大学", "campus": "彦根", "fields": ["MED", "SCI", "ARCH", "HUM"], "gakubu": "環境科学部,工学部,人間文化学部,人間看護学部", "ekimade": "", "ekikara_text": "バス", "ekikara_n": 0, "total": "", "transfer": "", "rank": "", "status": "要確認", "bikou": "", "category": "国公立"}];
+const COUNTS={"INFO": 11, "SCI": 20, "ARCH": 11, "AGRI": 11, "MED": 11, "BUS": 18, "LAW": 18, "EDU": 8, "INTL": 13, "HUM": 19, "ALL": 39};
+const TABS=[
+  {c:'ALL',l:'📋 全体'},{c:'INFO',l:'💻 情報'},{c:'SCI',l:'⚗️ 理工'},
+  {c:'ARCH',l:'🏛 建築'},{c:'AGRI',l:'🌱 農学'},{c:'MED',l:'🏥 医療'},
+  {c:'BUS',l:'📈 経済経営'},{c:'LAW',l:'⚖️ 法政治'},
+  {c:'EDU',l:'📚 教育心理'},{c:'INTL',l:'🌏 国際外語'},{c:'HUM',l:'📖 人文社会'},
+];
+const FILTERS=['すべて','国公立','関関同立','産近甲龍','その他'];
+let tab='ALL',filter='すべて';
+
+function init(){
+  const tabEl=document.getElementById('tabs');
+  TABS.forEach(t=>{
+    const cnt=COUNTS[t.c]||0;
+    const el=document.createElement('div');
+    el.className='tab'+(t.c===tab?' active':'');
+    el.innerHTML=t.l+`<span class="tab-cnt">(${cnt})</span>`;
+    el.onclick=()=>{tab=t.c;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');render();};
+    tabEl.appendChild(el);
+  });
+  const fEl=document.getElementById('filters');
+  FILTERS.forEach(f=>{
+    const el=document.createElement('button');
+    el.className='filter-btn'+(f===filter?' active':'');
+    el.textContent=f;
+    el.onclick=()=>{filter=f;document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');render();};
+    fEl.appendChild(el);
+  });
+  render();
+}
+
+function render(){
+  let list=tab==='ALL'?[...DATA]:DATA.filter(d=>d.fields.includes(tab));
+  if(filter!=='すべて') list=list.filter(d=>d.category===filter);
+  list.sort((a,b)=>{
+    const at=typeof a.total==='number'?a.total:999;
+    const bt=typeof b.total==='number'?b.total:999;
+    return at-bt;
+  });
+  document.getElementById('count-line').textContent=list.length+' キャンパス表示中';
+  const el=document.getElementById('cards');
+  if(!list.length){el.innerHTML='<div class="empty">該当なし</div>';return;}
+  el.innerHTML=list.map(d=>{
+    const rc=d.rank?'r'+d.rank:'rU';
+    const sc=d.status==='確認済'?'sok':'sng';
+    const sText=d.status==='確認済'?'確認済':'未確認';
+    let timeHtml,detailHtml='';
+    if(typeof d.total==='number'){
+      timeHtml=`<div class="time-num">${d.total}</div><div class="time-unit">分</div>`;
+      const parts=[];
+      if(d.ekimade&&d.ekimade>0) parts.push(`電車${d.ekimade}分`);
+      if(d.ekikara_text&&d.ekikara_text!=='要確認'&&d.ekikara_text!=='') parts.push(d.ekikara_text);
+      if(d.transfer!==''&&d.transfer!==null&&d.transfer!=='要確認') parts.push(`乗換${d.transfer}回`);
+      if(parts.length) detailHtml=`<div class="time-detail">${parts.join('<br>')}</div>`;
+    }else{
+      timeHtml=`<div class="time-num unk">未確認</div>`;
+      if(d.ekikara_text&&d.ekikara_text!=='要確認'&&d.ekikara_text!=='')
+        detailHtml=`<div class="time-detail">${d.ekikara_text}</div>`;
+    }
+    const note=d.bikou?`<div class="card-note">${d.bikou}</div>`:'';
+    const gText=d.gakubu.replace(/,/g,'・');
+    const gShort=gText.length>55?gText.substring(0,55)+'…':gText;
+    const catTag=`<span class="cat-tag">${d.category}</span>`;
+    return `<div class="card ${rc}">
+      <div class="badge">${d.rank||'?'}</div>
+      <div class="card-body">
+        <div class="card-name">${d.daigaku} ${d.campus}<span class="${sc}">${sText}</span>${catTag}</div>
+        <div class="card-sub">${gShort}</div>${note}
+      </div>
+      <div class="time-block">${timeHtml}${detailHtml}</div>
+    </div>`;
+  }).join('');
+}
+init();
+</script>
+</body>
+</html>
